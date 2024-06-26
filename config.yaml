@@ -1,0 +1,7 @@
+telemetry:
+  enabled: true
+  interval: 10
+  address: localhost:8888
+
+grpc_server:
+  listen_address: ${GRPC_SERVER_LISTEN_ADDRESS}
