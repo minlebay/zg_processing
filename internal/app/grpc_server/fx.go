@@ -1,7 +1,6 @@
 package grpc_server
 
 import (
-	"context"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
@@ -16,16 +15,7 @@ func NewModule() fx.Option {
 		),
 		fx.Invoke(
 			func(lc fx.Lifecycle, r *Server) {
-				lc.Append(fx.Hook{
-					OnStart: func(context.Context) error {
-						go r.StartServer()
-						return nil
-					},
-					OnStop: func(context.Context) error {
-						r.StopServer()
-						return nil
-					},
-				})
+				lc.Append(fx.StartStopHook(r.StartServer, r.StopServer))
 			},
 		),
 		fx.Decorate(func(log *zap.Logger) *zap.Logger {

@@ -15,41 +15,43 @@ type Server struct {
 	Logger *zap.Logger
 	Config *Config
 	router.UnimplementedMessageRouterServer
+	GRPCServer *grpc.Server
 }
 
 func NewServer(logger *zap.Logger, config *Config) *Server {
 	return &Server{
-		Done:   make(chan struct{}),
-		Logger: logger,
-		Config: config,
+		Done:       make(chan struct{}),
+		Logger:     logger,
+		Config:     config,
+		GRPCServer: grpc.NewServer(),
 	}
 }
 
-func (r *Server) StartServer() {
-	listener, err := net.Listen("tcp", r.Config.ListenAddress)
-	if err != nil {
-		r.Logger.Fatal(err.Error())
-	}
+func (s *Server) StartServer(ctx context.Context) {
+	go func() {
+		listener, err := net.Listen("tcp", s.Config.ListenAddress)
+		if err != nil {
+			s.Logger.Fatal(err.Error())
+		}
 
-	server := grpc.NewServer()
+		router.RegisterMessageRouterServer(s.GRPCServer, s)
 
-	router.RegisterMessageRouterServer(server, r)
+		if err = s.GRPCServer.Serve(listener); err != nil {
+			s.Logger.Fatal(err.Error())
+		}
 
-	if err = server.Serve(listener); err != nil {
-		r.Logger.Fatal(err.Error())
-	}
-
-	r.Logger.Info("Server started at address " + r.Config.ListenAddress)
+		s.Logger.Info("Server started at address " + s.Config.ListenAddress)
+	}()
 }
 
-func (r *Server) StopServer() {
-	r.Logger.Info("Server stopped")
-	r.Done <- struct{}{}
+func (s *Server) StopServer(ctx context.Context) {
+	s.Logger.Info("Server stopped")
+	s.Done <- struct{}{}
 }
 
-func (r *Server) ReceiveMessage(ctx context.Context, m *router.Message) (*router.Response, error) {
+func (s *Server) ReceiveMessage(ctx context.Context, m *router.Message) (*router.Response, error) {
 
-	r.Logger.Info("message received: ", zap.Any("message", m))
+	s.Logger.Info("message received: ", zap.Any("message", m))
 
 	resp := router.Response{
 		Success: true,
