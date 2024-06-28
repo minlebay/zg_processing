@@ -6,7 +6,9 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"net"
+	"sync"
 	"time"
+	"zg_processing/internal/app/kafka"
 	"zg_processing/pkg/message_v1/router"
 )
 
@@ -16,14 +18,17 @@ type Server struct {
 	Config *Config
 	router.UnimplementedMessageRouterServer
 	GRPCServer *grpc.Server
+	Kafka      *kafka.Kafka
+	wg         sync.WaitGroup
 }
 
-func NewServer(logger *zap.Logger, config *Config) *Server {
+func NewServer(logger *zap.Logger, config *Config, kafka *kafka.Kafka) *Server {
 	return &Server{
 		Done:       make(chan struct{}),
 		Logger:     logger,
 		Config:     config,
 		GRPCServer: grpc.NewServer(),
+		Kafka:      kafka,
 	}
 }
 
@@ -39,24 +44,25 @@ func (s *Server) StartServer(ctx context.Context) {
 		if err = s.GRPCServer.Serve(listener); err != nil {
 			s.Logger.Fatal(err.Error())
 		}
-
-		s.Logger.Info("Server started at address " + s.Config.ListenAddress)
 	}()
 }
 
 func (s *Server) StopServer(ctx context.Context) {
+	s.wg.Wait()
+	s.GRPCServer.Stop()
 	s.Logger.Info("Server stopped")
-	s.Done <- struct{}{}
 }
 
 func (s *Server) ReceiveMessage(ctx context.Context, m *router.Message) (*router.Response, error) {
-
-	s.Logger.Info("message received: ", zap.Any("message", m))
+	s.wg.Add(1)
+	defer s.wg.Done()
 
 	resp := router.Response{
 		Success: true,
 		Message: fmt.Sprintf("message received %v", time.Now()),
 	}
+
+	go s.Kafka.Send(context.Background(), m)
 
 	return &resp, nil
 }

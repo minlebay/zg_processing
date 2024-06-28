@@ -5,3 +5,10 @@ telemetry:
 
 grpc_server:
   listen_address: ${GRPC_SERVER_LISTEN_ADDRESS}
+
+kafka:
+  address: ${ZG_KAFKA_ADDRESS}
+  group_id: group_id
+  user: guest
+  password: guest
+  topic: processing_1
