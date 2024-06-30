@@ -13,4 +13,5 @@ COPY --from=builder /app/config.yaml .
 EXPOSE 8888
 EXPOSE 50052
 EXPOSE 29092
+EXPOSE 9092
 CMD ["./main"]
