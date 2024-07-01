@@ -9,14 +9,14 @@ import (
 	"sync"
 	"time"
 	"zg_processing/internal/app/kafka"
-	"zg_processing/pkg/message_v1/router"
+	"zg_processing/pkg/message_v1"
 )
 
 type Server struct {
 	Done   chan struct{}
 	Logger *zap.Logger
 	Config *Config
-	router.UnimplementedMessageRouterServer
+	message.UnimplementedMessageRouterServer
 	GRPCServer *grpc.Server
 	Kafka      *kafka.Kafka
 	wg         sync.WaitGroup
@@ -39,7 +39,7 @@ func (s *Server) StartServer(ctx context.Context) {
 			s.Logger.Fatal(err.Error())
 		}
 
-		router.RegisterMessageRouterServer(s.GRPCServer, s)
+		message.RegisterMessageRouterServer(s.GRPCServer, s)
 
 		if err = s.GRPCServer.Serve(listener); err != nil {
 			s.Logger.Fatal(err.Error())
@@ -53,11 +53,11 @@ func (s *Server) StopServer(ctx context.Context) {
 	s.Logger.Info("Server stopped")
 }
 
-func (s *Server) ReceiveMessage(ctx context.Context, m *router.Message) (*router.Response, error) {
+func (s *Server) ReceiveMessage(ctx context.Context, m *message.Message) (*message.Response, error) {
 	s.wg.Add(1)
 	defer s.wg.Done()
 
-	resp := router.Response{
+	resp := message.Response{
 		Success: true,
 		Message: fmt.Sprintf("message received %v", time.Now()),
 	}

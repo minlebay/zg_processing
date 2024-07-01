@@ -4,7 +4,7 @@ package router;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "../../pkg/message_v1/router;router";
+option go_package = "../../pkg/message_v1;message";
 
 message MessageContent {
   google.protobuf.Timestamp send_at = 1;

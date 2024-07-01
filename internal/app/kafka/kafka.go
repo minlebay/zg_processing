@@ -4,12 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
-	"sync"
-	"time"
-	"zg_processing/pkg/message_v1/router"
-
 	"github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
+	"sync"
+	"time"
+	message "zg_processing/pkg/message_v1"
 )
 
 type Kafka struct {
@@ -46,7 +45,7 @@ func (k *Kafka) StopKafka(ctx context.Context) {
 	}
 }
 
-func (k *Kafka) Send(ctx context.Context, message *router.Message) {
+func (k *Kafka) Send(ctx context.Context, message *message.Message) {
 	k.wg.Add(1)
 	defer k.wg.Done()
 
