@@ -19,7 +19,7 @@ func NewModule() fx.Option {
 			},
 		),
 		fx.Decorate(func(log *zap.Logger) *zap.Logger {
-			return log.Named("server")
+			return log.Named("processing_server") // TODO add identifier of which server is being decorated
 		}),
 	)
 }

@@ -12,3 +12,6 @@ kafka:
   user: guest
   password: guest
   topic: processing_1
+
+logstash:
+  url: ${LOGSTASH_URL}

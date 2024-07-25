@@ -2,9 +2,9 @@ package app
 
 import (
 	"go.uber.org/fx"
-	"go.uber.org/zap"
 	"zg_processing/internal/app/grpc_server"
 	"zg_processing/internal/app/kafka"
+	"zg_processing/internal/app/log"
 )
 
 func NewApp() *fx.App {
@@ -12,9 +12,9 @@ func NewApp() *fx.App {
 		fx.Options(
 			grpc_server.NewModule(),
 			kafka.NewModule(),
+			log.NewModule(),
 		),
 		fx.Provide(
-			zap.NewProduction,
 			NewConfig,
 		),
 	)
