@@ -1,7 +1,8 @@
 --- 
 # Processing Service
 
-The Processing Service is a part of the Message Generator and Router Project. It processes messages received from the router and integrates with Kafka for message brokering.
+The Processing Service is a part of the ZmeyGorynych Project. 
+It processes messages received from the router and integrates with Kafka for message brokering.
 
 ## Components
 
