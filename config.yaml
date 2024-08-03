@@ -1,12 +1,12 @@
 grpc_server:
-  listen_address: ${GRPC_SERVER_LISTEN_ADDRESS}
+  listen_address: ${GRPC_SERVER_LISTEN_ADDRESS:localhost:50052}
 
 kafka:
-  address: ${ZG_KAFKA_ADDRESS}
+  address: ${ZG_KAFKA_ADDRESS:kafka:29092}
   group_id: group_id
   user: guest
   password: guest
   topic: processing_1
 
 logstash:
-  url: ${LOGSTASH_URL}
+  url: ${LOGSTASH_URL:http://localhost:5000}
