@@ -32,7 +32,7 @@ func NewServer(logger *zap.Logger, config *Config, kafka *kafka.Kafka) *Server {
 	}
 }
 
-func (s *Server) StartServer(ctx context.Context) {
+func (s *Server) StartServer() {
 	go func() {
 		listener, err := net.Listen("tcp", s.Config.ListenAddress)
 		if err != nil {
@@ -47,7 +47,7 @@ func (s *Server) StartServer(ctx context.Context) {
 	}()
 }
 
-func (s *Server) StopServer(ctx context.Context) {
+func (s *Server) StopServer() {
 	s.wg.Wait()
 	s.GRPCServer.Stop()
 	s.Logger.Info("Server stopped")

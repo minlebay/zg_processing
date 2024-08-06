@@ -25,7 +25,7 @@ func NewKafka(logger *zap.Logger, config *Config) *Kafka {
 	}
 }
 
-func (k *Kafka) StartKafka(ctx context.Context) {
+func (k *Kafka) StartKafka() {
 	k.Writer = &kafka.Writer{
 		Addr:                   kafka.TCP(k.Config.Address),
 		Topic:                  k.Config.Topics,
@@ -35,7 +35,7 @@ func (k *Kafka) StartKafka(ctx context.Context) {
 	k.Logger.Info("Kafka writer initialized", zap.String("address", k.Config.Address), zap.String("topic", k.Config.Topics))
 }
 
-func (k *Kafka) StopKafka(ctx context.Context) {
+func (k *Kafka) StopKafka() {
 	k.wg.Wait()
 
 	if err := k.Writer.Close(); err != nil {
